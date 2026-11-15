@@ -1,0 +1,141 @@
+GIT COMMANDS USED
+Git workflow and login test case design
+
+Commands run from the local project directory. Repeated commands are retained where they demonstrate different stages. File creation and edits were performed locally.
+
+01. git init -b main
+    Initialize a new local repository with main as its initial branch, before creating any GitHub repository.
+
+02. git config user.name 'Aditya Kumar Rai'
+    Set the author name for this repository only.
+
+03. git config user.email 177700729+ADITYAKUMARRAI2007@users.noreply.github.com
+    Use the GitHub noreply email for public commit attribution.
+
+04. git add index.html about.html
+    Stage both HTML files for the initial commit.
+
+05. git commit -m 'Initial commit: add home and about pages'
+    Record the initial project state.
+
+06. git status --short
+    Check that the tracked working tree is clean after the initial commit.
+
+07. git diff -- index.html
+    Display the home page modification before staging it.
+
+08. git add index.html
+    Stage the updated home page.
+
+09. git commit -m 'Update home page introduction'
+    Create the second commit on main.
+
+10. git branch feature
+    Create a feature branch at the second commit.
+
+11. git switch feature
+    Switch the working tree to feature.
+
+12. git add about.html
+    Stage the learning-goals section on feature.
+
+13. git commit -m 'Add learning goals on feature branch'
+    Record a change made exclusively on feature.
+
+14. git switch main
+    Return to main before integrating the feature.
+
+15. git merge --no-ff feature -m 'Merge feature branch into main'
+    Create an explicit merge commit, preserving visible branch activity instead of fast-forwarding.
+
+16. git log --graph --oneline --decorate --all
+    Display the commit graph, branch labels, and merge history.
+
+17. git status --short --ignored
+    Show .gitignore as untracked and demo.log and temp/ as ignored (!!).
+
+18. git check-ignore -v demo.log temp/note.txt
+    Identify the exact ignore patterns that exclude the demonstration files.
+
+19. git add .gitignore
+    Stage only the ignore rules; excluded files remain local.
+
+20. git commit -m 'Ignore log files and temp folder'
+    Commit the ignore configuration.
+
+21. git add index.html
+    Stage a temporary change for the undo demonstration.
+
+22. git commit -m 'Add temporary maintenance notice'
+    Create the additional commit that will be undone.
+
+23. git show --format=short HEAD -- index.html
+    Show the added notice in the latest commit before reverting it.
+
+24. git revert --no-edit HEAD
+    Undo the latest commit by creating a new inverse commit, retaining both commits in public history.
+
+25. git diff 'HEAD~2' HEAD -- index.html
+    Verify that index.html now matches its state before the temporary commit; empty output means no difference.
+
+26. git status --short
+    Verify the working tree is clean after the revert.
+
+27. git log --graph --oneline --decorate --all
+    Display the preserved temporary commit, its revert, and the earlier branch merge.
+
+28. git log --graph --oneline --decorate --all
+    Inspect the complete local branch and merge history.
+
+29. git status --short --ignored
+    Verify ignored sample files remain excluded.
+
+30. git config --get credential.helper
+    Inspect the configured credential helper without exposing credentials.
+
+31. git remote add origin https://github.com/ADITYAKUMARRAI2007/git-workflow-login-test-design.git
+    Connect the already-created local repository to the empty public GitHub repository.
+
+32. git add git_commands.txt README.md login_test_cases.json
+    Stage command documentation, project notes, and the login test design.
+
+33. git commit -m 'Document Git commands and login test cases'
+    Include the required documentation in the version-controlled submission.
+
+34. git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push -u origin main feature
+    Push both branches using the authenticated GitHub CLI credential helper for this invocation; set upstream tracking.
+
+35. git remote -v
+    Display the fetch and push URLs.
+
+36. git log --graph --oneline --decorate --all
+    Display the final history including remote-tracking branches.
+
+37. git status --short --branch
+    Check the final branch tracking and clean working tree.
+
+38. git check-ignore -v demo.log temp/note.txt
+    Reconfirm ignored files match the committed ignore rules.
+
+39. git show --format=short 31ee256 -- index.html
+    Inspect the additional commit that introduced the temporary notice.
+
+40. git show --format=short c430f4d -- index.html
+    Inspect the revert commit that removes the temporary notice.
+
+41. git diff da1bc58 c430f4d -- index.html
+    Confirm the reverted file matches its state before the temporary commit.
+
+42. git ls-files
+    List tracked deliverables and confirm ignored sample files are absent.
+
+GITHUB CLI COMMANDS
+
+gh api user --jq '{login: .login, id: .id}'
+Verify the authenticated GitHub account without displaying a token.
+
+gh repo create ADITYAKUMARRAI2007/git-workflow-login-test-design --public --description 'Local Git workflow demonstration and login-system test case design for a practice assignment.'
+Create the public GitHub repository only after completing the local Git workflow.
+
+gh api repos/ADITYAKUMARRAI2007/git-workflow-login-test-design
+Read repository metadata to verify public visibility and the default branch.

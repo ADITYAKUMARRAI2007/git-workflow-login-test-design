@@ -1,0 +1,115 @@
+{
+  "scope": "Designed test cases only. No login implementation was supplied; execution is not claimed.",
+  "fixtures": {
+    "user1": "pass123",
+    "user6": "abc123",
+    "missing_user": "Not registered"
+  },
+  "assumptions": [
+    "Each case starts with the preconditions shown. Reset accounts between independent cases; only the sequence inside TC_13 carries state forward.",
+    "Input-validation failures (empty username or password, or password shorter than 6 characters) do not increment the authentication-failure counter. The requirements do not specify this behavior; it is a stated test assumption.",
+    "A successful login resets the consecutive authentication-failure counter. Account lockout is per registered account and continues until an authorized unlock; duration and unlock mechanism are outside the specified scope.",
+    "Quoted messages are proposed precise acceptance messages because the assignment gives no exact UI wording. Equivalent application wording may be accepted if it conveys the same result and state.",
+    "Both registered accounts exist before testing; stored credentials match the fixture values. Click Login for each submission. Fixture passwords are synthetic examples, not real account credentials."
+  ],
+  "cases": [
+    {
+      "id": "TC_01",
+      "scenario": "Valid login",
+      "input": "Unlocked; failures=0. Username=user1; Password=pass123. Click Login.",
+      "expected": "Login successful. Authenticated session created; consecutive failure count=0.",
+      "coverage": "Valid credentials"
+    },
+    {
+      "id": "TC_02",
+      "scenario": "Empty username",
+      "input": "Failures=0. Username=\"\"; Password=pass123. Click Login.",
+      "expected": "Display \"Username is required.\" No login or authenticated session; count remains 0.",
+      "coverage": "Username required"
+    },
+    {
+      "id": "TC_03",
+      "scenario": "Empty password",
+      "input": "Failures=0. Username=user1; Password=\"\". Click Login.",
+      "expected": "Display \"Password is required.\" No login; count remains 0.",
+      "coverage": "Password required and minimum length"
+    },
+    {
+      "id": "TC_04",
+      "scenario": "Password below minimum",
+      "input": "Failures=0. Username=user1; Password=abc (3 characters). Click Login.",
+      "expected": "Display \"Password must be at least 6 characters.\" No login; count remains 0.",
+      "coverage": "Minimum length"
+    },
+    {
+      "id": "TC_05",
+      "scenario": "Password boundary at 5 characters",
+      "input": "Failures=0. Username=user1; Password=abc12 (5 characters). Click Login.",
+      "expected": "Display \"Password must be at least 6 characters.\" No login; count remains 0.",
+      "coverage": "Just below boundary"
+    },
+    {
+      "id": "TC_06",
+      "scenario": "Valid password at exactly 6 characters",
+      "input": "Unlocked; failures=0. Username=user6; Password=abc123 (registered password, 6 characters). Click Login.",
+      "expected": "Login successful. Exactly 6 characters satisfies the length rule; authenticated session created.",
+      "coverage": "Boundary and valid login"
+    },
+    {
+      "id": "TC_07",
+      "scenario": "First failed authentication",
+      "input": "user1 unlocked; failures=0. Username=user1; Password=wrong77. Click Login.",
+      "expected": "Display \"Invalid username or password.\" No session; user1 failure count becomes 1; account stays unlocked.",
+      "coverage": "Invalid credentials and first attempt"
+    },
+    {
+      "id": "TC_08",
+      "scenario": "Unknown username",
+      "input": "Username=missing_user (not registered); Password=pass123. Click Login.",
+      "expected": "Display \"Invalid username or password.\" No session. No registered account is locked by this request.",
+      "coverage": "Invalid username"
+    },
+    {
+      "id": "TC_09",
+      "scenario": "Six-character password with wrong value",
+      "input": "user1 unlocked; failures=0. Username=user1; Password=abc123 (6 characters, not user1 password). Click Login.",
+      "expected": "Length validation passes; display \"Invalid username or password.\" No session; failure count becomes 1.",
+      "coverage": "Length validity versus credential validity"
+    },
+    {
+      "id": "TC_10",
+      "scenario": "Second consecutive failure",
+      "input": "user1 unlocked; failures=1. Username=user1; Password=wrong77. Click Login.",
+      "expected": "Display \"Invalid username or password.\" No session; failure count becomes 2; account remains unlocked.",
+      "coverage": "Below lockout threshold"
+    },
+    {
+      "id": "TC_11",
+      "scenario": "Third consecutive failure",
+      "input": "user1 unlocked; failures=2. Username=user1; Password=wrong77. Click Login.",
+      "expected": "Display \"Account locked after 3 consecutive failed login attempts.\" No session; count reaches 3 and user1 is locked.",
+      "coverage": "Lockout threshold"
+    },
+    {
+      "id": "TC_12",
+      "scenario": "Correct credentials after lockout",
+      "input": "user1 is already locked after 3 failures. Username=user1; Password=pass123. Click Login.",
+      "expected": "Display \"Account is locked.\" Login is denied even though credentials are correct; account remains locked.",
+      "coverage": "Lock enforcement"
+    },
+    {
+      "id": "TC_13",
+      "scenario": "Successful login breaks a failure sequence",
+      "input": "user1 unlocked; failures=2. Log in with user1/pass123, log out, then submit user1/wrong77.",
+      "expected": "First login succeeds and resets the consecutive count to 0. The later wrong password shows \"Invalid username or password.\" Count=1; account remains unlocked.",
+      "coverage": "Consecutive failures and reset"
+    },
+    {
+      "id": "TC_14",
+      "scenario": "Lockout is specific to the account",
+      "input": "user1 locked; user6 unlocked with failures=0. Username=user6; Password=abc123. Click Login.",
+      "expected": "user6 logs in successfully. user1 remains locked; user6 is unaffected by another account lockout.",
+      "coverage": "Account-specific lockout"
+    }
+  ]
+}
